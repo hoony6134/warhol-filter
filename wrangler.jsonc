@@ -7,6 +7,6 @@
   "d1_databases": [
     { "binding": "DB", "database_name": "warhol-ar", "database_id": "791d6c85-73a2-40a8-884d-9495c8a0c042" }
   ],
-  "routes": [{ "pattern": "warhol-ar.scian.xyz", "custom_domain": true }]
+  "routes": [{ "pattern": "warhol-filter.scian.xyz", "custom_domain": true }]
   // ADMIN_KEY: `wrangler secret put ADMIN_KEY` (prod) / .dev.vars (local)
 }

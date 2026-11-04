@@ -5,36 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>워홀 콜라주</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
 <style>
-  :root { --ink: #1b1b1b; --pink: #e8508c; --yellow: #f7d23e; }
+  :root {
+    --ink: #1b1b1b; --paper: #fffaf0;
+    --pink: #ff4fa0; --yellow: #ffd400; --cyan: #18c3d6; --orange: #ff7a1a;
+    --display: "Black Han Sans", "Apple SD Gothic Neo", sans-serif;
+  }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--ink); color: #fff; font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; overflow: hidden; }
-  #grid { position: fixed; inset: 0; display: grid; align-content: center; justify-content: center; }
-  #grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  #empty { position: fixed; inset: 0; display: grid; place-items: center; font-size: 3vw; font-weight: 800; color: var(--yellow); }
-  #bar { position: fixed; right: 12px; bottom: 12px; display: flex; gap: 8px; align-items: center; opacity: .25; transition: opacity .2s; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: var(--ink); color: var(--paper); font-family: var(--display); }
+  #grid { position: fixed; inset: 0; display: grid; align-content: center; justify-content: center; gap: 0; }
+  #grid img { width: 100%; height: 100%; object-fit: cover; display: block; animation: pop .35s ease-out; }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } }
+
+  #empty {
+    position: fixed; inset: 0; display: grid; place-content: center; gap: 3vh; text-align: center; color: var(--ink);
+    background: radial-gradient(rgba(255, 79, 160, .55) 22%, transparent 24%) 0 0 / 22px 22px, var(--yellow);
+  }
+  #empty .big { font-size: 9vw; line-height: 1; color: var(--paper); -webkit-text-stroke: .4vw var(--ink); paint-order: stroke fill; text-shadow: .8vw .8vw 0 var(--ink); }
+  #empty .url { font-size: 4vw; background: var(--ink); color: var(--yellow); padding: 1.2vh 2vw; border-radius: 1vw; justify-self: center; }
+  #empty .sub { font-size: 2.2vw; }
+
+  #bar { position: fixed; right: 14px; bottom: 14px; display: flex; gap: 10px; align-items: center; opacity: .2; transition: opacity .2s; }
   #bar:hover, #bar:focus-within { opacity: 1; }
-  #bar button { font: inherit; font-weight: 700; padding: 8px 12px; border: 2px solid #fff; border-radius: 8px; background: var(--ink); color: #fff; cursor: pointer; }
-  #bar button.danger { border-color: var(--pink); color: var(--pink); }
-  #count { font-weight: 700; }
-  #votes { position: fixed; inset: 6vh 8vw; background: #fff; color: var(--ink); border: 6px solid var(--ink); border-radius: 24px; padding: 4vh 4vw; box-shadow: 16px 16px 0 var(--pink); }
-  #votes h2 { margin: 0 0 2vh; font-size: 3.2vw; }
-  .row { display: grid; grid-template-columns: 16vw 1fr 8vw; gap: 1.5vw; align-items: center; margin: 1.4vh 0; font-size: 2vw; font-weight: 700; }
-  .track { height: 4.5vh; background: #eee; border-radius: 8px; overflow: hidden; }
-  .fill { height: 100%; background: var(--pink); transition: width .4s; }
-  .sub .fill { background: var(--yellow); }
+  #bar button, #count { font: 18px/1 var(--display); padding: 10px 14px; border: 3px solid var(--ink); border-radius: 10px; background: var(--paper); color: var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+  #bar button { cursor: pointer; }
+  #bar button.danger { background: var(--pink); color: #fff; }
+  #count { background: var(--yellow); }
+
+  #votes {
+    position: fixed; inset: 6vh 7vw; display: flex; flex-direction: column; justify-content: center;
+    background: var(--paper); color: var(--ink); border: .5vw solid var(--ink); border-radius: 2vw; padding: 4vh 4vw;
+    box-shadow: 1.6vw 1.6vw 0 var(--pink);
+  }
+  #votes h2 { margin: 0 0 2.5vh; font-weight: 400; font-size: 3.6vw; line-height: 1.1; }
+  #votes h2 + div + h2 { margin-top: 5vh; font-size: 2.6vw; }
+  .row { display: grid; grid-template-columns: 17vw 1fr 8vw; gap: 1.5vw; align-items: center; margin: 1.3vh 0; font-size: 2.2vw; }
+  .row b { font-weight: 400; text-align: right; }
+  .track { height: 5vh; background: #eee; border: .3vw solid var(--ink); border-radius: .8vw; overflow: hidden; }
+  .fill { height: 100%; transition: width .5s; }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <div id="grid"></div>
-<div id="empty">셀카를 기다리는 중…</div>
+<div id="empty">
+  <div class="big">셀카를 올려 주세요</div>
+  <div class="url">warhol-filter.scian.xyz</div>
+  <div class="sub" id="emptySub">QR을 찍으면 바로 열려요</div>
+</div>
 
 <section id="votes" hidden aria-live="polite">
-  <h2>이 사진은 워홀의 작품일까?</h2>
+  <h2>이 사진도 워홀의 작품일까?</h2>
   <div id="answers"></div>
-  <h2 style="margin-top:4vh">‘아니다’ — 무엇이 빠졌나</h2>
-  <div id="missing" class="sub"></div>
+  <h2>‘아니다’라고 답한 사람들, 뭐가 빠졌을까</h2>
+  <div id="missing"></div>
 </section>
 
 <div id="bar">
@@ -61,17 +89,18 @@ function layout() {
     const size = Math.min(W / c, H / Math.ceil(n / c));
     if (size > bestSize) { bestSize = size; best = c; }
   }
-  grid.style.gridTemplateColumns = `repeat(${best}, ${bestSize}px)`;
-  grid.style.gridAutoRows = `${bestSize}px`;
+  grid.style.gridTemplateColumns = `repeat(${best}, ${Math.floor(bestSize)}px)`;
+  grid.style.gridAutoRows = `${Math.floor(bestSize)}px`;
 }
 
 async function pollPhotos() {
   const res = await api(`/api/admin/photos?after=${lastId}`);
-  if (res.status === 403) { $('empty').textContent = '관리자 키가 필요합니다 (?key=…)'; return false; }
+  if (res.status === 403) { $('emptySub').textContent = '주소 끝에 ?key=… 를 붙여 주세요'; return false; }
   const ids = await res.json();
   for (const id of ids) {
     const img = new Image();
     img.alt = `참여자 사진 ${id}`;
+    img.decoding = 'async';
     img.src = `/api/admin/photo/${id}?key=${encodeURIComponent(key)}`;
     grid.append(img);
     lastId = id;
@@ -80,12 +109,13 @@ async function pollPhotos() {
   return true;
 }
 
-const LABELS = { yes: '그렇다', no: '아니다', unsure: '모르겠다', choice: '고른 이유', context: '시대적 맥락', hand: '작가의 손' };
+const LABELS = { yes: '그렇다', no: '아니다', unsure: '잘 모르겠다', choice: '고른 이유', context: '시대의 맥락', hand: '작가의 손' };
+const COLORS = { yes: 'var(--cyan)', no: 'var(--pink)', unsure: 'var(--yellow)', choice: 'var(--orange)', context: 'var(--cyan)', hand: 'var(--yellow)' };
 function bars(el, counts) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
   el.innerHTML = Object.entries(counts).map(([k, n]) => {
     const pct = Math.round((n / total) * 100);
-    return `<div class="row"><span>${LABELS[k]}</span><div class="track"><div class="fill" style="width:${pct}%"></div></div><span>${pct}%</span></div>`;
+    return `<div class="row"><span>${LABELS[k]}</span><div class="track"><div class="fill" style="width:${pct}%;background:${COLORS[k]}"></div></div><b>${pct}%</b></div>`;
   }).join('');
 }
 
@@ -117,13 +147,14 @@ addEventListener('keydown', (e) => { if (e.key === 'v' || e.key === 'V') toggleV
 addEventListener('resize', layout);
 
 $('wipe').addEventListener('click', async () => {
-  if (!confirm('사진과 투표를 모두 삭제할까요? 되돌릴 수 없습니다.')) return;
+  if (!confirm('사진과 투표를 모두 지울까요? 되돌릴 수 없어요.')) return;
   const res = await api('/api/admin/all', { method: 'DELETE' });
-  if (!res.ok) return alert('삭제 실패');
+  if (!res.ok) return alert('지우지 못했어요');
   grid.replaceChildren(); lastId = 0; layout();
   if (!$('votes').hidden) pollVotes();
 });
 
+layout();
 tick();
 </script>
 </body>

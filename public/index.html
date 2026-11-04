@@ -2,73 +2,159 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffd400">
 <title>워홀 필터</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap">
 <style>
-  :root { --ink: #1b1b1b; --pink: #e8508c; --yellow: #f7d23e; --teal: #3ec6c9; }
+  :root {
+    --ink: #1b1b1b; --paper: #fffaf0;
+    --pink: #ff4fa0; --yellow: #ffd400; --cyan: #18c3d6; --orange: #ff7a1a;
+    --display: "Black Han Sans", "Apple SD Gothic Neo", sans-serif;
+    --body: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; background: var(--yellow); color: var(--ink); }
-  main { max-width: 480px; margin: 0 auto; padding: 24px 16px 48px; }
-  h1 { font-size: 2rem; margin: 0 0 8px; letter-spacing: -0.02em; }
-  p { line-height: 1.5; }
-  .btn { display: block; width: 100%; padding: 16px; margin: 12px 0; font-size: 1.1rem; font-weight: 700; text-align: center;
-         border: 3px solid var(--ink); border-radius: 12px; background: #fff; color: var(--ink); cursor: pointer; }
-  .btn.primary { background: var(--pink); color: #fff; }
-  .btn:disabled { opacity: .5; }
-  canvas { width: 100%; aspect-ratio: 1; border: 3px solid var(--ink); border-radius: 12px; background: #fff; display: block; }
-  .note { font-size: .9rem; background: #fff; border: 2px solid var(--ink); border-radius: 8px; padding: 10px 12px; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-height: 100dvh; color: var(--ink); font: 16px/1.55 var(--body);
+    background-color: var(--yellow);
+    /* Ben-Day dots */
+    background-image: radial-gradient(rgba(255, 79, 160, .55) 22%, transparent 24%);
+    background-size: 14px 14px;
+    touch-action: manipulation;
+  }
+  main {
+    max-width: 460px; margin: 0 auto; min-height: 100dvh; display: flex; flex-direction: column;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+  }
+  section { display: flex; flex-direction: column; gap: 14px; flex: 1; }
   [hidden] { display: none !important; }
-  input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+
+  .masthead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .tag { font: 13px/1 var(--display); background: var(--ink); color: var(--yellow); padding: 7px 10px; border-radius: 4px; letter-spacing: .02em; }
+  .steps { display: flex; gap: 6px; }
+  .steps i { width: 26px; height: 26px; border: 3px solid var(--ink); border-radius: 50%; background: var(--paper); font: 13px/20px var(--display); text-align: center; font-style: normal; }
+  .steps i.on { background: var(--pink); color: #fff; }
+
+  h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.05; letter-spacing: -.01em; }
+  h1 { font-size: clamp(52px, 17vw, 76px); color: var(--paper); -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--ink); }
+  h2 { font-size: clamp(30px, 9vw, 40px); }
+
+  .panel { background: var(--paper); border: 3px solid var(--ink); border-radius: 14px; padding: 16px; box-shadow: 6px 6px 0 var(--ink); }
+  .panel p { margin: 0; }
+  .panel p + p { margin-top: 8px; }
+  .small { font-size: 14px; }
+  .warn { background: var(--cyan); }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 60px; padding: 14px 16px;
+    font: 22px/1 var(--display); color: var(--ink); background: var(--paper);
+    border: 3px solid var(--ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--ink);
+    cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .06s, box-shadow .06s;
+  }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn:focus-visible { outline: 4px solid var(--cyan); outline-offset: 3px; }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .btn.pink { background: var(--pink); color: #fff; }
+  .btn.cyan { background: var(--cyan); }
+  .btn.orange { background: var(--orange); }
+  .btn.big { min-height: 76px; font-size: 26px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stack { display: flex; flex-direction: column; gap: 14px; margin-top: auto; }
+
+  .frame { position: relative; border: 4px solid var(--ink); border-radius: 6px; box-shadow: 8px 8px 0 var(--ink); background: var(--paper); overflow: hidden; }
+  canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; }
+  .busy::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(var(--ink) 20%, transparent 22%) 0 0 / 16px 16px, var(--yellow);
+    animation: dots 0.8s steps(4) infinite;
+  }
+  @keyframes dots { to { background-position: 16px 16px, 0 0; } }
+  .status { font: 20px/1.2 var(--display); text-align: center; min-height: 24px; }
+
+  input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  @media (prefers-reduced-motion: reduce) { .busy::after { animation: none; } .btn { transition: none; } }
 </style>
 </head>
 <body>
 <main>
-  <section id="shoot">
-    <h1>워홀 필터</h1>
-    <p>셀카 한 장을 찍어 주세요. 얼굴 대신 손이나 물건도 괜찮아요.</p>
-    <p id="inapp" class="note" hidden>카카오톡 등 앱 안의 브라우저에서는 카메라가 열리지 않을 수 있어요. 오른쪽 위 메뉴에서 <b>Safari / Chrome으로 열기</b>를 눌러 주세요.</p>
-    <label class="btn primary" for="cam">📷 사진 찍기</label>
-    <input id="cam" type="file" accept="image/*" capture="user">
-    <label class="btn" for="pick">앨범에서 고르기</label>
-    <input id="pick" type="file" accept="image/*">
-    <p class="note">사진은 발표 중에만 화면에 쓰이고, 수업이 끝나면 모두 삭제합니다.</p>
+  <div class="masthead">
+    <span class="tag">팝아트 · 임정훈, 김서윤, 박소희</span>
+    <span class="steps" aria-hidden="true"><i data-step="1">1</i><i data-step="2">2</i><i data-step="3">3</i></span>
+  </div>
+
+  <section id="shoot" data-step="1">
+    <h1>워홀<br>필터</h1>
+    <div class="panel">
+      <p>셀카를 한 장 찍어 주세요.</p>
+      <p class="small">얼굴이 부담스러우면 손이나 물건을 찍어도 괜찮아요.</p>
+    </div>
+    <div id="inapp" class="panel warn small" hidden>
+      카카오톡 안에서는 카메라가 열리지 않을 수 있어요. 오른쪽 위 메뉴를 눌러 다른 브라우저로 열어 주세요.
+    </div>
+    <div class="stack">
+      <label class="btn pink big" for="cam">사진 찍기</label>
+      <input id="cam" type="file" accept="image/*" capture="user">
+      <label class="btn" for="pick">앨범에서 고르기</label>
+      <input id="pick" type="file" accept="image/*">
+      <p class="small" style="margin:0;text-align:center"><span style="background:var(--paper);padding:3px 8px;border-radius:4px">사진은 발표 시간에만 띄우고, 수업이 끝나면 지웁니다.</span></p>
+    </div>
   </section>
 
-  <section id="preview" hidden>
-    <canvas id="out" width="600" height="600" aria-label="워홀 필터를 적용한 사진"></canvas>
-    <p id="status" role="status">워홀의 공정을 실행하는 중…</p>
-    <button id="send" class="btn primary" disabled>화면으로 보내기</button>
-    <button id="retake" class="btn">다시 찍기</button>
+  <section id="preview" data-step="2" hidden>
+    <div id="frame" class="frame"><canvas id="out" width="600" height="600" aria-label="필터를 입힌 사진"></canvas></div>
+    <p id="status" class="status" role="status"></p>
+    <div class="stack">
+      <button id="send" class="btn pink big" disabled>앞 화면에 올리기</button>
+      <button id="retake" class="btn">다시 찍기</button>
+    </div>
   </section>
 
-  <section id="vote" hidden>
-    <h1>질문</h1>
-    <p>방금 만든 사진은 워홀의 방식으로 만들어졌습니다.<br><b>이 사진은 워홀의 작품일까요?</b></p>
-    <button class="btn" data-answer="yes">그렇다</button>
-    <button class="btn" data-answer="no">아니다</button>
-    <button class="btn" data-answer="unsure">모르겠다</button>
+  <section id="vote" data-step="3" hidden>
+    <h2>하나만 물어볼게요</h2>
+    <div class="panel">
+      <p>방금 사진은 워홀이 쓰던 방식 그대로 만들었어요.</p>
+      <p><b>그럼 이 사진도 워홀의 작품일까요?</b></p>
+    </div>
+    <div class="stack">
+      <button class="btn cyan big" data-answer="yes">그렇다</button>
+      <button class="btn pink big" data-answer="no">아니다</button>
+      <button class="btn" data-answer="unsure">잘 모르겠다</button>
+    </div>
   </section>
 
-  <section id="missing" hidden>
-    <h1>그렇다면</h1>
-    <p><b>무엇이 빠졌을까요?</b></p>
-    <button class="btn" data-missing="choice">무엇을 고를지 정한 이유</button>
-    <button class="btn" data-missing="context">시대적 맥락</button>
-    <button class="btn" data-missing="hand">작가의 손</button>
+  <section id="missing" data-step="3" hidden>
+    <h2>그럼 뭐가<br>빠졌을까요?</h2>
+    <div class="stack">
+      <button class="btn orange" data-missing="choice">무엇을 고를지 정한 이유</button>
+      <button class="btn cyan" data-missing="context">그 시대의 맥락</button>
+      <button class="btn" data-missing="hand">작가의 손</button>
+    </div>
   </section>
 
-  <section id="done" hidden>
-    <h1>고마워요!</h1>
-    <p>앞 화면을 봐 주세요.</p>
+  <section id="done" data-step="3" hidden>
+    <h1>끝!</h1>
+    <div class="panel"><p>이제 앞 화면을 봐 주세요.</p></div>
   </section>
 </main>
 
 <script type="module">
-import { luminance, levels, renderTile, PALETTES, OFFSETS } from './filter.js';
+import { warholize } from './filter.js';
 
 const S = 300; // tile size; output is 2×2 tiles
 const $ = (id) => document.getElementById(id);
-const show = (id) => document.querySelectorAll('main > section').forEach((s) => (s.hidden = s.id !== id));
+function show(id) {
+  document.querySelectorAll('main > section').forEach((s) => (s.hidden = s.id !== id));
+  const step = $(id).dataset.step;
+  document.querySelectorAll('.steps i').forEach((i) => i.classList.toggle('on', i.dataset.step <= step));
+  scrollTo(0, 0);
+}
+show('shoot');
 
 let cid;
 try { cid = localStorage.getItem('cid') || crypto.randomUUID(); localStorage.setItem('cid', cid); }
@@ -76,7 +162,7 @@ catch { cid = crypto.randomUUID(); }
 
 if (/KAKAOTALK|Instagram|FBAN|FBAV|Line\//i.test(navigator.userAgent)) $('inapp').hidden = false;
 
-// Person segmentation (step ①). Loaded in the background; on any failure we skip it.
+// Person segmentation starts loading on page open, while people are still reading the page.
 const segmenterReady = (async () => {
   const v = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
   const { FilesetResolver, ImageSegmenter } = await import(`${v}/vision_bundle.mjs`);
@@ -87,8 +173,11 @@ const segmenterReady = (async () => {
   });
 })().catch((e) => { console.warn('segmenter unavailable', e); return null; });
 
+// On a slow connection don't make people wait: after 6 s, go without the background cut.
+const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(() => r(null), ms))]);
+
 async function personMask(canvas) {
-  const seg = await segmenterReady;
+  const seg = await withTimeout(segmenterReady, 6000);
   if (!seg) return null;
   try {
     const res = seg.segment(canvas);
@@ -114,29 +203,36 @@ async function loadImage(file) {
   } finally { URL.revokeObjectURL(url); }
 }
 
+let blob = null; // encoded right after rendering, so the upload button sends immediately
+
 async function process(file) {
   show('preview');
+  blob = null;
   $('send').disabled = true;
-  $('status').textContent = '워홀의 공정을 실행하는 중…';
-  const out = $('out').getContext('2d');
-  out.fillStyle = '#fff'; out.fillRect(0, 0, 600, 600);
+  $('frame').classList.add('busy');
+  $('status').textContent = '바꾸는 중';
   try {
     const img = await loadImage(file);
-    // Center-crop to a square at tile size.
+    // Square crop at tile size. Portrait shots crop nearer the top so the head isn't cut off.
     const src = document.createElement('canvas');
     src.width = src.height = S;
+    const sctx = src.getContext('2d', { willReadFrequently: true });
     const side = Math.min(img.naturalWidth, img.naturalHeight);
-    src.getContext('2d').drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, S, S);
-    const rgba = src.getContext('2d').getImageData(0, 0, S, S).data;
+    sctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) * 0.2, side, side, 0, 0, S, S);
+    const rgba = sctx.getImageData(0, 0, S, S).data;
 
-    const lv = levels(luminance(rgba, S, S), await personMask(src), S, S);
-    PALETTES.forEach((p, i) => {
-      out.putImageData(new ImageData(renderTile(lv, S, S, p, OFFSETS[i]), S, S), (i % 2) * S, (i >> 1) * S);
-    });
-    $('status').textContent = '고대비 → 평면 색 → 2×2 반복. 마음에 들면 보내 주세요.';
+    // A new seed per photo: every print gets its own offsets and ink, like a fresh pull.
+    const tiles = warholize(rgba, await personMask(src), S, (Math.random() * 2 ** 32) >>> 0);
+    const out = $('out').getContext('2d');
+    tiles.forEach((t, i) => out.putImageData(new ImageData(t, S, S), (i % 2) * S, (i >> 1) * S));
+    $('frame').classList.remove('busy');
+    $('status').textContent = '이렇게 바뀌었어요';
+    // Flat colors compress well; ~60–120 KB at this quality.
+    blob = await new Promise((r) => $('out').toBlob(r, 'image/jpeg', 0.82));
     $('send').disabled = false;
   } catch (e) {
     console.error(e);
+    $('frame').classList.remove('busy');
     $('status').textContent = '사진을 읽지 못했어요. 다시 찍어 주세요.';
   }
 }
@@ -149,24 +245,24 @@ for (const id of ['cam', 'pick']) $(id).addEventListener('change', (e) => {
 $('retake').addEventListener('click', () => show('shoot'));
 
 $('send').addEventListener('click', async () => {
+  if (!blob) return;
   $('send').disabled = true;
-  $('status').textContent = '보내는 중…';
+  $('status').textContent = '올리는 중';
   try {
-    const blob = await new Promise((r) => $('out').toBlob(r, 'image/jpeg', 0.85));
     const res = await fetch('/api/photo', { method: 'POST', headers: { 'content-type': 'image/jpeg', 'x-cid': cid }, body: blob });
     if (!res.ok) throw new Error(await res.text());
     show('vote');
   } catch (e) {
     console.error(e);
-    $('status').textContent = '보내지 못했어요. 잠시 후 다시 눌러 주세요.';
+    $('status').textContent = '올리지 못했어요. 한 번 더 눌러 주세요.';
     $('send').disabled = false;
   }
 });
 
-async function vote(answer, missing) {
-  try {
-    await fetch('/api/vote', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cid, answer, missing }) });
-  } catch (e) { console.error(e); }
+function vote(answer, missing) {
+  // Fire and forget: the next screen doesn't depend on the reply.
+  fetch('/api/vote', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ cid, answer, missing }) })
+    .catch(console.error);
   show('done');
 }
 document.querySelectorAll('[data-answer]').forEach((b) => b.addEventListener('click', () => {

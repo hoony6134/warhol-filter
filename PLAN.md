@@ -1,4 +1,4 @@
-# warhol-ar 구현 계획
+# warhol-filter 구현 계획
 
 GS2543 현대 예술의 이해 · 팝아트 발표 「코드가 복제하지 못한 팝아트의 시선」의 라이브 데모용 필터 웹앱.
 
@@ -12,24 +12,19 @@ GS2543 현대 예술의 이해 · 팝아트 발표 「코드가 복제하지 못
 - 질문: "이 사진은 워홀의 작품일까?" 그렇다 / 아니다 / 모르겠다. 아니다를 고르면 "무엇이 빠졌나?"를 묻는다. PDF 본론 3의 결과 칸이 `'고른 이유' __% · '시대적 맥락' __% · '작가의 손' __%`이므로 선택지는 이 세 개로 한다.
 - 개인정보: PDF에 "사진은 발표 중에만 쓰고 수업 후 삭제합니다"라고 약속했다. 관리자 페이지에서 전체 삭제할 수 있어야 한다.
 
-## 필터 공정 (PDF 본론 1 표 그대로)
+## 필터 공정
 
-| 단계 | 워홀(1962) | 코드 |
-|---|---|---|
-| ① 이미지 | 스타의 홍보 사진을 고름 | 사진을 찍고 MediaPipe Selfie Segmenter로 인물을 분리 |
-| ② 단순화 | 스크린 전사로 명암 축소 | 밝기를 3~4단계로 나눔 |
-| ③ 평면 색 | 입술·눈두덩·머리를 칠함 | 단계마다 정해 둔 색, 배경은 단색 |
-| ④ 반복 | 같은 판을 거듭 찍고 판이 어긋남 | 2×2 격자, 칸마다 다른 팔레트, 몇 px 어긋나게 |
+조사 결과(`RESEARCH.md`)에 맞춰 11/4에 바꿨다: 색면을 먼저 칠하고, 검정 망점 스크린을 맨 위에 어긋나게 찍고, 칸마다 잉크 양과 스퀴지 줄무늬를 다르게 한다. 2×2 칸마다 배경·인물 색이 다르다.
 
 ## 구조
 
-Cloudflare Worker 하나로 정적 페이지, API, 저장소를 모두 처리한다. 도메인은 **warhol-ar.scian.xyz**. 저장소는 R2·KV 대신 D1 하나만 쓴다(사진 BLOB + 투표, 60명 규모).
+Cloudflare Worker 하나로 정적 페이지, API, 저장소를 모두 처리한다. 도메인은 **warhol-filter.scian.xyz**. 저장소는 R2·KV 대신 D1 하나만 쓴다(사진 BLOB + 투표, 60명 규모).
 - HTTPS가 기본이라 인증서 작업이 없다.
 - 강의실 와이파이가 아니라 LTE로 접속해도 된다.
 - 노트북을 서버로 쓰지 않으므로 발표 당일 장애 지점이 줄어든다.
 
 ```
-warhol-ar/
+warhol-filter/
   public/
     index.html     참여자: 촬영 → 필터 미리보기 → 전송 → 투표
     admin.html     큰 화면: 콜라주 격자 + 투표 집계 + 전체 삭제
@@ -62,8 +57,8 @@ warhol-ar/
 
 ## 배포 (11/4 완료)
 
-- https://warhol-ar.scian.xyz · Cloudflare 계정 Cyan · D1 `warhol-ar`
-- 관리자: `https://warhol-ar.scian.xyz/admin?key=<.admin-key 내용>` (키는 gitignore된 `.admin-key`)
+- https://warhol-filter.scian.xyz · Cloudflare 계정 Cyan · D1 `warhol-ar`
+- 관리자: `https://warhol-filter.scian.xyz/admin?key=<.admin-key 내용>` (키는 gitignore된 `.admin-key`)
 - 슬라이드용 QR: Canva QR 앱으로 위 주소를 넣어 만든다
 - 재배포: `npm run deploy`
 
