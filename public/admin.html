@@ -109,7 +109,7 @@ async function pollPhotos() {
   return true;
 }
 
-const LABELS = { yes: '그렇다', no: '아니다', unsure: '잘 모르겠다', choice: '고른 이유', context: '시대의 맥락', hand: '작가의 손' };
+const LABELS = { yes: '그렇다', no: '아니다', unsure: '잘 모르겠다', choice: '고른 이유', context: '시대의 맥락', hand: '작가의 손길' };
 const COLORS = { yes: 'var(--cyan)', no: 'var(--pink)', unsure: 'var(--yellow)', choice: 'var(--orange)', context: 'var(--cyan)', hand: 'var(--yellow)' };
 function bars(el, counts) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
