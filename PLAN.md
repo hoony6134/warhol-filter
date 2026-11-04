@@ -60,7 +60,7 @@ warhol-filter/
 - https://warhol-filter.scian.xyz · Cloudflare 계정 Cyan · D1 `warhol-ar`
 - 관리자: `https://warhol-filter.scian.xyz/admin?key=<.admin-key 내용>` (키는 gitignore된 `.admin-key`)
 - 슬라이드용 QR: Canva QR 앱으로 위 주소를 넣어 만든다
-- 재배포: `npm run deploy`
+- 배포: `main`에 푸시하면 Cloudflare Workers Builds가 `npm test` 후 자동 배포한다. 수동 배포는 `npm run deploy`. DB 스키마 변경(`migrations/`)은 자동 배포에 없으니 `npx wrangler d1 migrations apply warhol-ar --remote`로 직접 적용
 
 ## 리스크
 
