@@ -25,7 +25,16 @@
   #empty {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; gap: 5vw; padding: 6vh 6vw; color: var(--ink);
     background: radial-gradient(rgba(255, 79, 160, .55) 22%, transparent 24%) 0 0 / 22px 22px, var(--yellow);
+    /* A cover layer over the live collage: it irises shut/open instead of being removed. */
+    --ease: cubic-bezier(.7, 0, .2, 1);
+    clip-path: circle(75% at 50% 50%);
+    transition: clip-path .6s var(--ease), visibility 0s;
   }
+  #empty.off { clip-path: circle(0% at 50% 50%); visibility: hidden; pointer-events: none; transition: clip-path .6s var(--ease), visibility 0s .6s; }
+  #empty .qr, #empty .copy { transition: transform .6s var(--ease); }
+  #empty.off .qr { transform: scale(.7) rotate(-6deg); }
+  #empty.off .copy { transform: scale(.85) rotate(4deg); }
+  @media (prefers-reduced-motion: reduce) { #empty, #empty.off, #empty .qr, #empty .copy { transition: none; } }
   #empty .qr {
     flex: none; width: min(70vh, 42vw); aspect-ratio: 1; padding: min(1.6vh, 1vw);
     background: var(--yellow); border: min(1vh, .6vw) solid var(--ink); border-radius: min(2.4vh, 1.4vw);
@@ -51,7 +60,14 @@
     position: fixed; inset: 6vh 7vw; display: flex; flex-direction: column; justify-content: center;
     background: var(--paper); color: var(--ink); border: .5vw solid var(--ink); border-radius: 2vw; padding: 4vh 4vw;
     box-shadow: 1.6vw 1.6vw 0 var(--pink);
+    /* Slaps on like a sticker (overshoot), peels off fast. */
+    transition: transform .5s cubic-bezier(.34, 1.56, .64, 1), opacity .2s, visibility 0s;
   }
+  #votes.off {
+    transform: scale(.5) rotate(-8deg); opacity: 0; visibility: hidden; pointer-events: none;
+    transition: transform .3s cubic-bezier(.7, 0, .84, 0), opacity .3s, visibility 0s .3s;
+  }
+  @media (prefers-reduced-motion: reduce) { #votes, #votes.off { transition: none; } }
   #votes h2 { margin: 0 0 2.5vh; font-weight: 400; font-size: 3.6vw; line-height: 1.1; }
   #votes h2 + div + h2 { margin-top: 5vh; font-size: 2.6vw; }
   .row { display: grid; grid-template-columns: 17vw 1fr 8vw; gap: 1.5vw; align-items: center; margin: 1.3vh 0; font-size: 2.2vw; }
@@ -72,7 +88,7 @@
   </div>
 </div>
 
-<section id="votes" hidden aria-live="polite">
+<section id="votes" class="off" aria-live="polite">
   <h2>이 사진도 워홀의 작품일까요?</h2>
   <div id="answers"></div>
   <h2>그렇다면 무엇이 빠졌을까?</h2>
@@ -81,6 +97,7 @@
 
 <div id="bar">
   <span id="count">0장</span>
+  <button id="landing">QR 화면 (S)</button>
   <button id="toggle">투표 결과 (V)</button>
   <button id="wipe" class="danger">전체 삭제</button>
 </div>
@@ -91,10 +108,11 @@ const api = (path, opts = {}) => fetch(path, { ...opts, headers: { 'x-key': key,
 const $ = (id) => document.getElementById(id);
 const grid = $('grid');
 let lastId = 0;
+let showLanding = false; // S: bring the QR screen back over the collage
 
 function layout() {
   const n = grid.children.length, W = innerWidth, H = innerHeight;
-  $('empty').hidden = n > 0;
+  $('empty').classList.toggle('off', n > 0 && !showLanding);
   $('count').textContent = `${n}장`;
   if (!n) return;
   // Pick the column count that makes square cells as large as possible.
@@ -147,17 +165,24 @@ async function pollVotes() {
 async function tick() {
   try {
     if (!(await pollPhotos())) return;
-    if (!$('votes').hidden) await pollVotes();
+    if (!$('votes').classList.contains('off')) await pollVotes();
   } catch (e) { console.warn(e); }
   setTimeout(tick, 2000);
 }
 
 function toggleVotes() {
-  $('votes').hidden = !$('votes').hidden;
-  if (!$('votes').hidden) pollVotes().catch(console.warn);
+  $('votes').classList.toggle('off');
+  if (!$('votes').classList.contains('off')) pollVotes().catch(console.warn);
 }
+function toggleLanding() { showLanding = !showLanding; layout(); }
 $('toggle').addEventListener('click', toggleVotes);
-addEventListener('keydown', (e) => { if (e.key === 'v' || e.key === 'V') toggleVotes(); });
+$('landing').addEventListener('click', toggleLanding);
+// e.code, not e.key: with the Korean keyboard active, S and V arrive as 'ㄴ' and 'ㅍ'.
+addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+  if (e.code === 'KeyV') toggleVotes();
+  if (e.code === 'KeyS') toggleLanding();
+});
 addEventListener('resize', layout);
 
 $('wipe').addEventListener('click', async () => {
@@ -165,7 +190,7 @@ $('wipe').addEventListener('click', async () => {
   const res = await api('/api/admin/all', { method: 'DELETE' });
   if (!res.ok) return alert('지우지 못했어요');
   grid.replaceChildren(); lastId = 0; layout();
-  if (!$('votes').hidden) pollVotes();
+  if (!$('votes').classList.contains('off')) pollVotes();
 });
 
 layout();
