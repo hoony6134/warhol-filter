@@ -61,7 +61,15 @@ export default {
         let ids;
         try { ids = (await req.json()).ids; } catch { return bad('json'); }
         if (!Array.isArray(ids) || !ids.length || ids.length > MAX_PHOTOS || !ids.every(Number.isSafeInteger)) return bad('ids');
-        await env.DB.batch(ids.map((id) => env.DB.prepare('DELETE FROM photos WHERE id = ?').bind(id)));
+        // json_each keeps it to one bound parameter (D1 caps a statement at 100).
+        const list = JSON.stringify(ids);
+        const { results } = await env.DB.prepare("SELECT DISTINCT cid FROM photos WHERE cid != '' AND id IN (SELECT value FROM json_each(?))").bind(list).all();
+        const cids = JSON.stringify(results.map((r) => r.cid));
+        // A device whose last photo is gone loses its vote too, so photo and vote counts stay comparable.
+        await env.DB.batch([
+          env.DB.prepare('DELETE FROM photos WHERE id IN (SELECT value FROM json_each(?))').bind(list),
+          env.DB.prepare('DELETE FROM votes WHERE cid IN (SELECT value FROM json_each(?)) AND cid NOT IN (SELECT cid FROM photos)').bind(cids),
+        ]);
         return json({ ok: true });
       }
       if (p === '/api/admin/all' && req.method === 'DELETE') {

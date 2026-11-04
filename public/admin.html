@@ -209,11 +209,12 @@ addEventListener('keydown', (e) => {
 });
 $('delSel').addEventListener('click', async () => {
   const imgs = [...selected()];
-  if (!imgs.length || !confirm(`선택한 사진 ${imgs.length}장을 지울까요? 되돌릴 수 없어요.`)) return;
+  if (!imgs.length || !confirm(`선택한 사진 ${imgs.length}장을 지울까요? 사진이 모두 지워진 사람의 투표도 함께 지워져요. 되돌릴 수 없어요.`)) return;
   const res = await api('/api/admin/photos', { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: imgs.map((img) => Number(img.dataset.id)) }) });
   if (!res.ok) return alert('지우지 못했어요');
   imgs.forEach((img) => img.remove());
   updateSel(); layout();
+  if (!$('votes').classList.contains('off')) pollVotes().catch(console.warn);
 });
 
 $('wipe').addEventListener('click', async () => {
