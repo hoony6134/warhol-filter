@@ -7,7 +7,7 @@
 // shortcut: tone thresholds, dot pitch and offset ranges are design choices; no source gives measured values.
 
 export const INK = '#161616';
-// [ground, subject] per tile. Grounds from the Marilyns / Shot Marilyns (turquoise, orange, lemon, light blue).
+// [ground, subject] per tile. Grounds follow the Flavor Marilyns (mint, orange, lemon, blue); subject pinks are a design choice.
 export const PALETTES = [
   ['#2bb3b1', '#f4a6b8'],
   ['#f07a2a', '#f7c6d0'],

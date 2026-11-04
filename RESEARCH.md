@@ -1,41 +1,42 @@
 # 워홀의 실크스크린 공정 조사 노트
 
-필터 알고리즘(`public/filter.js`)의 근거. 2026-11-04 조사. 미술관·보존 처리 자료를 우선했다.
+필터 알고리즘(`public/filter.js`)의 근거. 2026-11-04 조사, 같은 날 원문 교차검증.
+교차검증: 조사에 참여하지 않은 별도 에이전트가 원문(Tate 보존 보고서 PDF, 워홀 미술관 교안 원문)을 직접 읽고 주장마다 판정했다. MoMA 페이지는 접속이 막혀(403) 검색 요약과 위키백과로만 확인했다.
 
 ## 확인된 사실
 
-| 항목 | 내용 | 신뢰도 | 출처 |
+| 항목 | 내용 | 검증 | 출처 · 주의 |
 |---|---|---|---|
-| 레이어 순서 | 평평한 색면(배경, 얼굴, 입술, 눈두덩, 머리)을 **먼저** 아크릴로 칠하고, 마른 뒤 **검정 사진 스크린을 맨 위에** 찍었다 | 높음 | Tate 보존 처리 전시, MoMA, Warhol Museum 교안, Tate TAAMPP 보고서(2008) |
-| 색면 모양 | 사진에서 단순한 윤곽만 따서 요소마다 한 가지 색으로 채웠다. 명암을 따라 칠하지 않았다. 이목구비는 윤곽 안에 꼼꼼히, 나머지는 느슨하게 칠했다 | 높음 | Tate TAAMPP, Warhol Museum |
-| 원본 사진 | 마릴린 연작은 모두 영화 《나이아가라》(1953) 홍보 사진 한 장(진 콘먼 촬영)에서 출발했다. 사진을 자르고 대비를 높여 상업 스크린 업체에 맡겨 확대 필름 양화와 망점 스크린을 만들었다. 결과적으로 중간 톤이 사라지고 몇 단계만 남는다 | 중간 | MoMA, Warhol Museum 교안 |
-| 판 어긋남 | 같은 스크린을 여러 칸에 다시 써서, 검정 이미지가 색면과 정확히 맞지 않았다 | 높음 | Tate TAAMPP, Smarthistory |
-| 잉크 얼룩 | 잉크가 많으면 망점이 메워져 새까매지고, 적으면 이미지가 유령처럼 흐려진다. 화면 아래 3분의 1에 스퀴지 줄무늬가 남은 예가 있다 | 높음 | Tate TAAMPP |
-| 반복 | 「마릴린 두폭화」는 5×5 두 판, 50번 반복. 왼쪽은 색, 오른쪽은 검정만, 오른쪽은 진하게 번진 얼굴부터 흐린 얼굴까지 농도가 달라진다 | 중간 | Wikipedia, Tate 설명 |
-| 색 | 배경은 청록, 초록, 파랑, 레몬 노랑, 주황, 빨강. 금색 배경은 「골드 마릴린」뿐. 머리는 노랑, 입술은 빨강, 눈두덩은 초록·청록, 얼굴은 분홍 | 중간 | MoMA, Smarthistory |
-| 1967 판화집 | 같은 판으로 10장, 장마다 다른 색 조합. 색 조합은 대부분 데이비드 휘트니가 골라 워홀의 승인을 받았다. 손으로 밑칠하지 않고 여러 색을 스크린으로 찍었다 | 중간 | MoMA, Wikipedia |
+| 레이어 순서 | 색면을 먼저 칠하고, 마른 뒤 검정 사진 스크린을 맨 위에 찍는 것이 워홀의 표준 방식 | 지지됨(단서 있음) | 워홀 미술관(1970년대 주문 초상화, 1964 「꽃」), Tate TAAMPP(1973). **1962년 마릴린 일부는 먼저 찍고 → 손으로 칠하고 → 다시 찍었다**(Tate). "검정이 마지막"은 맞지만 "항상 색이 먼저"는 과장 |
+| 색면 모양 | 필름 양화에서 단순한 윤곽을 따서, 주요 요소마다 다른 색 한 가지로 칠했다. 윤곽 안은 꼼꼼히, 나머지는 느슨하게 | 부분 지지 | 요소 목록(배경·피부·입술·홍채·눈두덩·눈썹)과 칠 방식은 **1973년 「브룩 헤이워드」** 기록. "머리"는 출처 없음. "명암을 따르지 않았다"는 평평한 색면에서 나온 추론 |
+| 원본 사진 | 사진을 자르고 대비를 높여 상업 스크린 업체에 맡겼다. 결과물에 망점이 보인다 | 부분 지지 | 업체·대비 강화는 1964 「꽃」 교안, 자르기는 Tate(마릴린), 망점은 1973 작품. **"중간 톤이 사라짐"은 '고대비'에서 나온 추론**이며 직접 서술은 없다 |
+| 판 어긋남 | 같은 스크린을 여러 칸에 다시 써서 검정 이미지가 색면과 정확히 맞지 않았다 | 지지됨(1973 한정) | Tate TAAMPP: 네 점에 같은 스크린을 썼고 "때때로" 어긋났다. 1962년 작품은 위키백과(2차)만 언급 |
+| 잉크 얼룩 | 잉크가 많으면 망점이 메워지고, 적으면 유령처럼 흐려지고, 아래 3분의 1에 줄무늬 | 지지됨(1973 한정) | Tate TAAMPP. **모두 1973년 초상화의 관찰**이라 마릴린의 특징으로 말하면 안 된다 |
+| 「마릴린 두폭화」 | 얼굴 50개. 왼쪽은 색, 오른쪽은 흑백으로 점점 흐려진다 | 부분 지지 | 위키백과, Tate 설명(검색 요약). 원래 두 작품이었다(흑백 먼저, 컬러 나중, Tate). **5×5 배열은 원문에서 확인 못 함** |
+| 배경색 | 마릴린 연작 배경: 민트(청록), 체리(빨강), 초록, 레몬, 파랑, 주황, 라벤더, 포도, 감초(검정) | 지지됨 | 위키백과 「Flavor Marilyns」, 갤러리 자료. **"금색은 골드 마릴린뿐"과 요소별 색(노랑 머리, 빨강 입술 등)은 출처 없음** |
+| 1967 판화집 | 한 이미지로 10장, 장마다 다른 색 조합. 데이비드 휘트니가 색 조합 상당수를 골라 워홀의 승인을 받았다. 판마다 스크린 약 5개 | 부분 지지 | 위키백과(MoMA 403). "손 밑칠 없음"은 확인 못 함 |
+| 실측값 | 톤 단계 수, 망점 선수(lpi), 어긋남 거리의 실측값 | 없음 확인 | 확인한 모든 출처에 수치가 없다. 필터의 숫자는 설계 선택 |
 
-## 확인하지 못한 것
+**핵심 주의**: 판 어긋남, 잉크 얼룩, 칠 방식의 가장 구체적인 증거는 1973년 초상화 한 점에서 나왔다. 발표에서는 "워홀의 실크스크린 작업에서 관찰된 특징"으로 말하고, 1962년 마릴린의 특징이라고 단정하지 않는다.
 
-- 톤 단계 수, 망점 선수(lpi), 어긋남 거리의 **실측값**은 어떤 자료에도 없다. 필터의 숫자는 설계 선택이다.
-- 가장 자세한 기술 자료는 1973년 주문 초상화 「브룩 헤이워드」 보존 처리 보고서다. 1962–64년 마릴린에 적용하는 것은 미술관 설명과 맞지만 추론이 섞여 있다.
-- 제라드 말랑가 등 조수의 구체적 역할, 형광 분홍·은색 잉크 사용 여부는 확인하지 못했다.
+## 필터에 옮긴 규칙과 근거
 
-## 필터에 옮긴 규칙
-
-1. **색면 먼저**: 배경 한 색 + 인물 한 색. 인물 윤곽은 흐리게 한 뒤 낮은 기준으로 잘라 느슨하게 삐져나오게 한다. 명암에 따라 색을 바꾸지 않는다.
-2. **검정 스크린 마지막**: 어두운 곳은 꽉 찬 검정, 중간 톤은 45° 망점(셀 5px), 밝은 곳은 잉크 없음.
-3. **판 어긋남**: 칸마다 검정 판을 타일 폭의 1~4%만큼 밀고 최대 1° 돌린다. 색면도 따로 조금 민다.
-4. **잉크 양**: 칸마다 0.7~1.35배. 많으면 망점이 메워지고 적으면 흐려진다. 아래 3분의 1에 스퀴지 줄무늬를 더 세게 넣는다.
-5. **반복**: 2×2, 칸마다 다른 배경·인물 색(1967 판화집처럼). 사진마다 무작위 값이 달라 같은 사진도 찍을 때마다 다르게 나온다.
+| 필터 동작 | 근거 수준 |
+|---|---|
+| 배경 한 색 + 인물 한 색을 평평하게 칠함, 윤곽은 흐리게 따서 삐져나오게 | 원칙은 근거 있음. 인물을 한 색으로 합친 것(입술·눈 등 분리 안 함)은 단순화 |
+| 검정 판을 맨 위에 찍음 | 근거 있음 |
+| 어두운 30% 꽉 찬 검정, 다음 30% 망점, 밝은 40% 잉크 없음 | 고대비·망점은 근거 있음. 비율은 설계 선택 |
+| 45° 원형 망점, 칸 5px | 설계 선택(실측값 없음) |
+| 검정 판 1~4% 어긋남 + 최대 1° 회전, 색면 ±1.5% | 어긋남 자체는 근거 있음(1973). 수치는 설계 선택 |
+| 잉크 양 0.7~1.35배, 아래 3분의 1 줄무늬 강조 | 1973 관찰을 옮김. 수치는 설계 선택 |
+| 2×2 반복, 칸마다 다른 배경·인물 색 | 1967 판화집의 '같은 판, 다른 색 조합'. 배경색은 Flavor Marilyns 계열 |
+| 사진 배경에는 검정을 찍지 않음 | 설계 선택(원본 홍보 사진의 단순한 배경을 흉내) |
 
 ## 출처
 
 - [Tate, In the conservation studio: Andy Warhol](https://www.tate.org.uk/visit/tate-modern/display/in-the-studio/in-the-conservation-studio-andy-warhol)
 - [Tate, TAAMPP newsletter 3 (2008)](https://www.tate.org.uk/documents/99/taampp_newsletter_3_january2008.pdf)
-- [MoMA, Gold Marilyn Monroe](https://www.moma.org/collection/works/79737) · [MoMA Learning](https://www.moma.org/learn/moma_learning/andy-warhol-gold-marilyn-monroe-1962/)
-- [MoMA, Marilyn Monroe portfolio](https://www.moma.org/collection/works/61240)
 - [Warhol Museum, Underpainting and Photographic Silkscreen Printing](https://www.warhol.org/wp-content/uploads/2018/04/Silkscreen-4-Underpainting-and-Photographic-Silkscreen-Printing.docx)
 - [Warhol Museum, Commissioned Portraits](https://warhol.org/lessons/commissioned-portraits)
-- [Smarthistory, Gold Marilyn Monroe](https://smarthistory.org/warhol-gold-marilyn-monroe)
-- [Wikipedia, Marilyn Diptych](https://en.wikipedia.org/wiki/Marilyn_Diptych) · [Marilyn Monroe portfolio](https://en.wikipedia.org/wiki/Marilyn_Monroe_portfolio)
+- [MoMA, Gold Marilyn Monroe](https://www.moma.org/collection/works/79737) · [MoMA, Marilyn Monroe portfolio](https://www.moma.org/collection/works/61240) (403, 검색 요약으로 확인)
+- [Wikipedia, Marilyn Diptych](https://en.wikipedia.org/wiki/Marilyn_Diptych) · [Marilyn Monroe portfolio](https://en.wikipedia.org/wiki/Marilyn_Monroe_portfolio) · [Flavor Marilyns](https://en.wikipedia.org/wiki/Flavor_Marilyns)
