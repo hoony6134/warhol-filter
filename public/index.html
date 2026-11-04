@@ -269,8 +269,10 @@ async function process(file) {
   blob = null; last = null;
   $('send').disabled = true; $('recolor').hidden = true;
   $('frame').classList.add('busy');
-  $('status').textContent = '실크스크린 찍는 중';
+  // One message per real stage; the frame wait lets the text paint before the next synchronous step blocks the page.
+  const stage = async (text) => { $('status').textContent = text; await new Promise((r) => requestAnimationFrame(() => setTimeout(r))); };
   try {
+    await stage('사진 읽는 중');
     const img = await loadImage(file);
     // Square crop at tile size. Portrait shots crop nearer the top so the head isn't cut off.
     const src = document.createElement('canvas');
@@ -281,7 +283,10 @@ async function process(file) {
     const rgba = sctx.getImageData(0, 0, S, S).data;
 
     // A new seed per photo: every print gets its own offsets and ink, like a fresh pull.
-    last = { rgba, mask: await personMask(src), seed: newSeed() };
+    await stage('인물 오려내는 중');
+    const mask = await personMask(src);
+    await stage('실크스크린 찍는 중');
+    last = { rgba, mask, seed: newSeed() };
     await draw(last.seed);
     $('frame').classList.remove('busy');
     $('status').textContent = '네 장 찍어냈어요';
