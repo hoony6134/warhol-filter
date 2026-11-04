@@ -20,6 +20,8 @@
   #grid { position: fixed; inset: 0; display: grid; align-content: center; justify-content: center; gap: 0; }
   #grid img { width: 100%; height: 100%; object-fit: cover; display: block; animation: pop .35s ease-out; }
   @keyframes pop { from { transform: scale(.6); opacity: 0; } }
+  #grid img { cursor: pointer; }
+  #grid img.sel { outline: .5vmin solid var(--pink); outline-offset: -.5vmin; filter: brightness(.55); }
 
   /* Waiting screen: QR card on the left, call to action on the right. */
   #empty {
@@ -97,6 +99,7 @@
 
 <div id="bar">
   <span id="count">0장</span>
+  <button id="delSel" class="danger" hidden>선택 삭제</button>
   <button id="landing">QR 화면 (S)</button>
   <button id="toggle">투표 결과 (V)</button>
   <button id="wipe" class="danger">전체 삭제</button>
@@ -132,6 +135,7 @@ async function pollPhotos() {
   for (const id of ids) {
     const img = new Image();
     img.alt = `참여자 사진 ${id}`;
+    img.dataset.id = id;
     img.decoding = 'async';
     img.src = `/api/admin/photo/${id}?key=${encodeURIComponent(key)}`;
     grid.append(img);
@@ -185,11 +189,38 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('resize', layout);
 
+// Click photos to select them, then delete the selection. Esc clears it.
+const selected = () => grid.querySelectorAll('img.sel');
+function updateSel() {
+  const n = selected().length;
+  $('delSel').hidden = !n;
+  $('delSel').textContent = `선택 삭제 (${n})`;
+  $('bar').style.opacity = n ? 1 : ''; // keep the button visible while something is selected
+}
+grid.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'IMG') return;
+  e.target.classList.toggle('sel');
+  updateSel();
+});
+addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  selected().forEach((img) => img.classList.remove('sel'));
+  updateSel();
+});
+$('delSel').addEventListener('click', async () => {
+  const imgs = [...selected()];
+  if (!imgs.length || !confirm(`선택한 사진 ${imgs.length}장을 지울까요? 되돌릴 수 없어요.`)) return;
+  const res = await api('/api/admin/photos', { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: imgs.map((img) => Number(img.dataset.id)) }) });
+  if (!res.ok) return alert('지우지 못했어요');
+  imgs.forEach((img) => img.remove());
+  updateSel(); layout();
+});
+
 $('wipe').addEventListener('click', async () => {
   if (!confirm('사진과 투표를 모두 지울까요? 되돌릴 수 없어요.')) return;
   const res = await api('/api/admin/all', { method: 'DELETE' });
   if (!res.ok) return alert('지우지 못했어요');
-  grid.replaceChildren(); lastId = 0; layout();
+  grid.replaceChildren(); lastId = 0; updateSel(); layout();
   if (!$('votes').classList.contains('off')) pollVotes();
 });
 

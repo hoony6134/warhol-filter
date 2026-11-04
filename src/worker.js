@@ -57,6 +57,13 @@ export default {
         const { results } = await env.DB.prepare('SELECT answer, missing, count(*) AS n FROM votes GROUP BY answer, missing').all();
         return json(results);
       }
+      if (p === '/api/admin/photos' && req.method === 'DELETE') {
+        let ids;
+        try { ids = (await req.json()).ids; } catch { return bad('json'); }
+        if (!Array.isArray(ids) || !ids.length || ids.length > MAX_PHOTOS || !ids.every(Number.isSafeInteger)) return bad('ids');
+        await env.DB.batch(ids.map((id) => env.DB.prepare('DELETE FROM photos WHERE id = ?').bind(id)));
+        return json({ ok: true });
+      }
       if (p === '/api/admin/all' && req.method === 'DELETE') {
         await env.DB.batch([env.DB.prepare('DELETE FROM photos'), env.DB.prepare('DELETE FROM votes')]);
         return json({ ok: true });
