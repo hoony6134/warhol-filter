@@ -49,7 +49,9 @@ export default {
       if (m && req.method === 'GET') {
         const row = await env.DB.prepare('SELECT data FROM photos WHERE id = ?').bind(Number(m[1])).first();
         if (!row) return bad('not found', 404);
-        return new Response(new Uint8Array(row.data), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'no-store' } });
+        // A photo never changes and AUTOINCREMENT never reuses an id, so the admin browser may keep it.
+        // private: only that browser, never Cloudflare's shared cache. 3 h ≈ one class, so copies expire after the talk.
+        return new Response(new Uint8Array(row.data), { headers: { 'content-type': 'image/jpeg', 'cache-control': 'private, max-age=10800, immutable' } });
       }
       if (p === '/api/admin/votes' && req.method === 'GET') {
         const { results } = await env.DB.prepare('SELECT answer, missing, count(*) AS n FROM votes GROUP BY answer, missing').all();
