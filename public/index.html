@@ -89,10 +89,11 @@
   </div>
 
   <section id="shoot" data-step="1">
-    <h1>워홀<br>필터</h1>
+    <h1>Warhol<br>Filter</h1>
     <div class="panel">
-      <p>셀카를 한 장 찍어 주세요.</p>
-      <p class="small">얼굴이 부담스러우면 손이나 물건을 찍어도 괜찮아요.</p>
+      <p><strong>셀카를 한 장 찍거나 선택해 주세요.</strong></p>
+      <p class="small">필터 처리가 완료된 사진만 전송되며, 수업 이후 삭제할 예정입니다.</p>
+      <p class="small">부담스럽다면 반려동물이나 인터넷에서 찾은 사진도 괜찮아요!</p>
     </div>
     <div id="inapp" class="panel warn small" hidden>
       카카오톡 안에서는 카메라가 열리지 않을 수 있어요. 오른쪽 위 메뉴를 눌러 다른 브라우저로 열어 주세요.
@@ -102,7 +103,7 @@
       <input id="cam" type="file" accept="image/*" capture="user">
       <label class="btn" for="pick">앨범에서 고르기</label>
       <input id="pick" type="file" accept="image/*">
-      <p class="small" style="margin:0;text-align:center"><span style="background:var(--paper);padding:3px 8px;border-radius:4px">사진은 발표 시간에만 띄우고, 수업이 끝나면 지웁니다.</span></p>
+      <!-- <p class="small" style="margin:0;text-align:center"><span style="background:var(--paper);padding:3px 8px;border-radius:4px">사진은 발표 시간에만 띄우고, 수업이 끝나면 지웁니다.</span></p> -->
     </div>
   </section>
 
@@ -110,13 +111,13 @@
     <div id="frame" class="frame"><canvas id="out" width="600" height="600" aria-label="필터를 입힌 사진"></canvas></div>
     <p id="status" class="status" role="status"></p>
     <div class="stack">
-      <button id="send" class="btn pink big" disabled>앞 화면에 올리기</button>
+      <button id="send" class="btn pink big" disabled>앞의 스크린에 보내기</button>
       <button id="retake" class="btn">다시 찍기</button>
     </div>
   </section>
 
   <section id="vote" data-step="3" hidden>
-    <h2>하나만 물어볼게요</h2>
+    <h2>질문</h2>
     <div class="panel">
       <p>방금 사진은 워홀이 쓰던 방식 그대로 만들었어요.</p>
       <p><b>그럼 이 사진도 워홀의 작품일까요?</b></p>
@@ -129,17 +130,17 @@
   </section>
 
   <section id="missing" data-step="3" hidden>
-    <h2>그럼 뭐가<br>빠졌을까요?</h2>
+    <h2>그럼 어떤 것이<br>부족할까요?</h2>
     <div class="stack">
       <button class="btn orange" data-missing="choice">무엇을 고를지 정한 이유</button>
       <button class="btn cyan" data-missing="context">그 시대의 맥락</button>
-      <button class="btn" data-missing="hand">작가의 손</button>
+      <button class="btn" data-missing="hand">작가의 손길</button>
     </div>
   </section>
 
   <section id="done" data-step="3" hidden>
-    <h1>끝!</h1>
-    <div class="panel"><p>이제 앞 화면을 봐 주세요.</p></div>
+    <h1>감사합니다!</h1>
+    <div class="panel"><p>이제 앞의 스크린을 봐 주세요.</p></div>
   </section>
 </main>
 
