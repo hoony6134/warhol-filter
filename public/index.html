@@ -95,29 +95,19 @@
   .status { margin: 0; font: 20px/1.2 var(--display); text-align: center; min-height: 24px; }
 
   input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-  /* Screen change: a black print pass with cyan/pink edges sweeps across and the screen swaps under it.
-     The band is wider than the screen plus its skew, so it fully covers the swap at the midpoint. */
-  #wipe {
-    position: fixed; top: 0; bottom: 0; left: 0; width: 300vw; z-index: 20; pointer-events: none; background: var(--ink);
-    box-shadow: -16px 0 0 var(--cyan), -32px 0 0 var(--pink), 16px 0 0 var(--pink), 32px 0 0 var(--cyan);
-    transform: translateX(-340vw) skewX(-14deg);
-  }
-  #wipe.go { animation: wipe .64s linear; }
-  /* slide in, hold while covering (the swap happens here), slide out */
-  @keyframes wipe {
-    0%   { transform: translateX(-320vw) skewX(-14deg); animation-timing-function: cubic-bezier(.5, 0, .9, .5); }
-    40%  { transform: translateX(-110vw) skewX(-14deg); animation-timing-function: linear; }
-    60%  { transform: translateX(-90vw) skewX(-14deg); animation-timing-function: cubic-bezier(.1, .5, .5, 1); }
-    100% { transform: translateX(120vw) skewX(-14deg); }
-  }
-  /* Then the new screen's parts pop in one after another. */
-  section.enter > * { animation: rise .45s cubic-bezier(.34, 1.56, .64, 1) both; }
-  section.enter > :nth-child(2) { animation-delay: .06s; }
-  section.enter > :nth-child(3) { animation-delay: .12s; }
-  section.enter > :nth-child(4) { animation-delay: .18s; }
-  @keyframes rise { from { opacity: 0; transform: translateY(18px) scale(.94) rotate(-1.5deg); } }
+  /* Screen change: the old screen tilts out to the left, the new one slides in with a bounce,
+     like turning a comic page. Only the visible screen moves; background and header stay still.
+     Uses the browser's View Transitions; browsers without it switch instantly. */
+  main > section:not([hidden]) { view-transition-name: screen; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  ::view-transition-old(screen) { animation: page-out .28s cubic-bezier(.55, 0, .9, .4) both; }
+  ::view-transition-new(screen) { animation: page-in .5s cubic-bezier(.34, 1.4, .64, 1) .05s both; }
+  @keyframes page-out { to { transform: translateX(-40%) rotate(-5deg); opacity: 0; } }
+  @keyframes page-in { from { transform: translateX(40%) rotate(5deg); opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .busy::after, section.enter > * { animation: none; } .btn { transition: none; } #wipe { display: none; }
+    .busy::after { animation: none; } .btn { transition: none; }
+    ::view-transition-old(screen), ::view-transition-new(screen) { animation: none; }
+  }
   }
 </style>
 </head>
@@ -183,27 +173,21 @@
     <div class="panel"><p class="lead">이제 앞의 스크린을 봐 주세요.</p></div>
   </section>
 </main>
-<div id="wipe" aria-hidden="true"></div>
 
 <script type="module">
 import { warholize } from './filter.js';
 
 const S = 300; // tile size; output is 2×2 tiles
 const $ = (id) => document.getElementById(id);
-let swapTimer;
 function show(id, animate = true) {
   const swap = () => {
-    document.querySelectorAll('main > section').forEach((s) => { s.hidden = s.id !== id; s.classList.remove('enter'); });
+    document.querySelectorAll('main > section').forEach((s) => (s.hidden = s.id !== id));
     const step = $(id).dataset.step;
     document.querySelectorAll('.steps i').forEach((i) => i.classList.toggle('on', i.dataset.step <= step));
     scrollTo(0, 0);
-    if (animate) { void $(id).offsetWidth; $(id).classList.add('enter'); } // reflow restarts the pop-in
   };
-  clearTimeout(swapTimer);
-  if (!animate || matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
-  const w = $('wipe');
-  w.classList.remove('go'); void w.offsetWidth; w.classList.add('go');
-  swapTimer = setTimeout(swap, 320); // middle of the hold (40–60% of 0.64 s), band covers the screen
+  if (!animate || !document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return swap();
+  document.startViewTransition(swap);
 }
 show('shoot', false);
 
