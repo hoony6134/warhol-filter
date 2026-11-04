@@ -54,4 +54,10 @@ for (let seed = 1; seed <= 50; seed++) {
   assert.equal(new Set(seen).size, 4, 'four different pairs');
 }
 
+// Color reroll: same print seed + new color seed → same black layer, different colors.
+const isInk = (t) => Array.from({ length: n }, (_, i) => t[i * 4] === hex(INK)[0] && t[i * 4 + 1] === hex(INK)[1] && t[i * 4 + 2] === hex(INK)[2]);
+const base = warholize(rgba, mask, S, 7, 1), rer = warholize(rgba, mask, S, 7, 2);
+assert.deepEqual(rer.map(isInk), base.map(isInk), 'reroll keeps the black layer');
+assert.notDeepEqual(rer.map((t) => px(t, S - 1, 20).join()), base.map((t) => px(t, S - 1, 20).join()), 'reroll changes colors');
+
 console.log('filter ok');

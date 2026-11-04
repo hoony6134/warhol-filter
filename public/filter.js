@@ -131,12 +131,13 @@ export function renderTile(subj, cov, screen, S, palette, p) {
 }
 
 // Whole pipeline for one S×S photo → four RGBA tiles (top-left, top-right, bottom-left, bottom-right).
-export function warholize(rgba, mask, S, seed = 1) {
+// colorSeed picks the 4 color pairs; seed drives the print (offsets, ink). Separate so colors can be rerolled alone.
+export function warholize(rgba, mask, S, seed = 1, colorSeed = seed) {
   const subj = subjectMask(mask, S, S);
   const cov = coverage(luminance(rgba, S, S), subj, S * S);
   const screen = dotScreen(S, S);
-  const rnd = mulberry32(seed);
+  const rnd = mulberry32(seed), crnd = mulberry32(colorSeed);
   const pals = [...PALETTES];
-  for (let i = 0; i < 4; i++) { const j = i + Math.floor(rnd() * (pals.length - i)); [pals[i], pals[j]] = [pals[j], pals[i]]; }
+  for (let i = 0; i < 4; i++) { const j = i + Math.floor(crnd() * (pals.length - i)); [pals[i], pals[j]] = [pals[j], pals[i]]; }
   return pals.slice(0, 4).map((pal) => renderTile(subj, cov, screen, S, pal, pull(rnd, S)));
 }

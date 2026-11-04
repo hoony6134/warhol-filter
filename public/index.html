@@ -92,6 +92,15 @@
     animation: dots 0.8s steps(4) infinite;
   }
   @keyframes dots { to { background-position: 16px 16px, 0 0; } }
+  .status-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .icon-btn {
+    flex: none; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; cursor: pointer;
+    background: var(--cyan); color: var(--ink); border: 3px solid var(--ink); border-radius: 50%; box-shadow: 3px 3px 0 var(--ink);
+  }
+  .icon-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+  .icon-btn:focus-visible { outline: 4px solid var(--cyan); outline-offset: 3px; }
+  .icon-btn.spin svg { animation: spin .4s ease-out; }
+  @keyframes spin { from { transform: rotate(-360deg); } }
   .status { margin: 0; font: 20px/1.2 var(--display); text-align: center; min-height: 24px; }
 
   input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -139,7 +148,12 @@
 
   <section id="preview" data-step="2" hidden>
     <div id="frame" class="frame"><canvas id="out" width="600" height="600" aria-label="필터를 입힌 사진"></canvas></div>
-    <p id="status" class="status" role="status"></p>
+    <div class="status-row">
+      <p id="status" class="status" role="status"></p>
+      <button id="recolor" class="icon-btn" aria-label="색 바꾸기" title="색 바꾸기" hidden>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+      </button>
+    </div>
     <div class="stack">
       <button id="send" class="btn pink big" disabled>앞의 스크린에 보내기</button>
       <button id="retake" class="btn">다시 찍기</button>
@@ -239,13 +253,23 @@ async function loadImage(file) {
 }
 
 let blob = null; // encoded right after rendering, so the upload button sends immediately
+let last = null; // { rgba, mask, seed } of the current photo, so "색 바꾸기" redraws only the colors
+const newSeed = () => (Math.random() * 2 ** 32) >>> 0;
+
+async function draw(colorSeed) {
+  const tiles = warholize(last.rgba, last.mask, S, last.seed, colorSeed);
+  const out = $('out').getContext('2d');
+  tiles.forEach((t, i) => out.putImageData(new ImageData(t, S, S), (i % 2) * S, (i >> 1) * S));
+  // Flat colors compress well; ~60–120 KB at this quality.
+  blob = await new Promise((r) => $('out').toBlob(r, 'image/jpeg', 0.82));
+}
 
 async function process(file) {
   show('preview');
-  blob = null;
-  $('send').disabled = true;
+  blob = null; last = null;
+  $('send').disabled = true; $('recolor').hidden = true;
   $('frame').classList.add('busy');
-  $('status').textContent = '바꾸는 중';
+  $('status').textContent = '실크스크린 찍는 중';
   try {
     const img = await loadImage(file);
     // Square crop at tile size. Portrait shots crop nearer the top so the head isn't cut off.
@@ -257,14 +281,11 @@ async function process(file) {
     const rgba = sctx.getImageData(0, 0, S, S).data;
 
     // A new seed per photo: every print gets its own offsets and ink, like a fresh pull.
-    const tiles = warholize(rgba, await personMask(src), S, (Math.random() * 2 ** 32) >>> 0);
-    const out = $('out').getContext('2d');
-    tiles.forEach((t, i) => out.putImageData(new ImageData(t, S, S), (i % 2) * S, (i >> 1) * S));
+    last = { rgba, mask: await personMask(src), seed: newSeed() };
+    await draw(last.seed);
     $('frame').classList.remove('busy');
-    $('status').textContent = '이렇게 바뀌었어요';
-    // Flat colors compress well; ~60–120 KB at this quality.
-    blob = await new Promise((r) => $('out').toBlob(r, 'image/jpeg', 0.82));
-    $('send').disabled = false;
+    $('status').textContent = '네 장 찍어냈어요';
+    $('send').disabled = $('recolor').disabled = false; $('recolor').hidden = false;
   } catch (e) {
     console.error(e);
     $('frame').classList.remove('busy');
@@ -278,10 +299,18 @@ for (const id of ['cam', 'pick']) $(id).addEventListener('change', (e) => {
   if (f) process(f);
 });
 $('retake').addEventListener('click', () => show('shoot'));
+$('recolor').addEventListener('click', async () => {
+  if (!last) return;
+  const b = $('recolor');
+  b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin'); // restart the spin on every tap
+  $('send').disabled = b.disabled = true;
+  await draw(newSeed());
+  $('send').disabled = b.disabled = false;
+});
 
 $('send').addEventListener('click', async () => {
   if (!blob) return;
-  $('send').disabled = true;
+  $('send').disabled = $('recolor').disabled = true;
   $('status').textContent = '올리는 중';
   try {
     const res = await fetch('/api/photo', { method: 'POST', headers: { 'content-type': 'image/jpeg', 'x-cid': cid }, body: blob });
@@ -290,7 +319,7 @@ $('send').addEventListener('click', async () => {
   } catch (e) {
     console.error(e);
     $('status').textContent = '올리지 못했어요. 한 번 더 눌러 주세요.';
-    $('send').disabled = false;
+    $('send').disabled = $('recolor').disabled = false;
   }
 });
 
