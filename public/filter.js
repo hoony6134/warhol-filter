@@ -7,12 +7,18 @@
 // shortcut: tone thresholds, dot pitch and offset ranges are design choices; no source gives measured values.
 
 export const INK = '#161616';
-// [ground, subject] per tile. Grounds follow the Flavor Marilyns (mint, orange, lemon, blue); subject pinks are a design choice.
+// [ground, face] pairs sampled from the works themselves (RESEARCH.md, "색 조합"). Each photo draws 4 different pairs.
 export const PALETTES = [
-  ['#2bb3b1', '#f4a6b8'],
-  ['#f07a2a', '#f7c6d0'],
-  ['#f2df3a', '#ef8fb0'],
-  ['#86c3e6', '#f9b48f'],
+  ['#d4251a', '#e398b2'], // Flavor Marilyns 1962, red
+  ['#38c0a1', '#d5aecc'], // Flavor Marilyns 1962, mint
+  ['#7170a2', '#dfc6d4'], // Flavor Marilyns 1962, grey-violet
+  ['#558bc7', '#dea3b3'], // Shot Marilyns 1964, blue
+  ['#ff7c50', '#f8bbc8'], // Shot Marilyns 1964, orange
+  ['#3ec1b8', '#fd8a9a'], // Shot Marilyns 1964, turquoise
+  ['#028db0', '#ae9ebe'], // Marilyn Monroe portfolio 1967, blue
+  ['#fd7779', '#97a7a6'], // Mao portfolio 1972, coral
+  ['#fcc2b8', '#fc630e'], // Mao portfolio 1972, pale pink
+  ['#ebd235', '#fbc695'], // Mao portfolio 1972, yellow
 ];
 const DOT_PITCH = 5; // px per halftone cell at a 300px tile; large enough to read as dots on a phone
 
@@ -130,5 +136,7 @@ export function warholize(rgba, mask, S, seed = 1) {
   const cov = coverage(luminance(rgba, S, S), subj, S * S);
   const screen = dotScreen(S, S);
   const rnd = mulberry32(seed);
-  return PALETTES.map((pal) => renderTile(subj, cov, screen, S, pal, pull(rnd, S)));
+  const pals = [...PALETTES];
+  for (let i = 0; i < 4; i++) { const j = i + Math.floor(rnd() * (pals.length - i)); [pals[i], pals[j]] = [pals[j], pals[i]]; }
+  return pals.slice(0, 4).map((pal) => renderTile(subj, cov, screen, S, pal, pull(rnd, S)));
 }

@@ -46,4 +46,12 @@ assert.deepEqual(a[0], b[0], 'same seed → same result');
 assert.notDeepEqual(a[0], c[0], 'different seed → different pull');
 assert.ok(mulberry32(1)() !== mulberry32(2)());
 
+// Color pairs: each photo gets 4 different pairs from PALETTES (right edge is outside the subject → ground).
+const grounds = PALETTES.map(([g]) => hex(g).join());
+for (let seed = 1; seed <= 50; seed++) {
+  const seen = warholize(rgba, mask, S, seed).map((t) => px(t, S - 1, 20).join());
+  assert.ok(seen.every((g) => grounds.includes(g)), 'ground comes from PALETTES');
+  assert.equal(new Set(seen).size, 4, 'four different pairs');
+}
+
 console.log('filter ok');
