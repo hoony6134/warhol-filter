@@ -24,34 +24,37 @@
 | 필터 동작 | 근거 수준 |
 |---|---|
 | 배경 한 색 + 인물 한 색을 평평하게 칠함, 윤곽은 흐리게 따서 삐져나오게 | 원칙은 근거 있음. 인물을 한 색으로 합친 것(입술·눈 등 분리 안 함)은 단순화 |
-| 검정 판을 맨 위에 찍음 | 근거 있음 |
-| 어두운 30% 꽉 찬 검정, 다음 30% 망점, 밝은 40% 잉크 없음 | 고대비·망점은 근거 있음. 비율은 설계 선택 |
+| 사진 판을 맨 위에 찍음. 잉크는 1962·64년 회화는 검정, 1967 판화집은 장마다 다른 어두운 색(남색·회색·올리브·적갈색 등) | 근거 있음. 1967 잉크 색은 MoMA 도판에서 직접 확인 |
+| 어두운 30% 꽉 찬 잉크, 다음 15% 망점, 밝은 55% 잉크 없음 | 고대비는 근거 있음. 1967 판화가 거의 단색 덩어리라 망점 구간을 좁혔다. 비율은 설계 선택 |
 | 45° 원형 망점, 칸 5px | 설계 선택(실측값 없음) |
 | 검정 판 1~4% 어긋남 + 최대 1° 회전, 색면 ±1.5% | 어긋남 자체는 근거 있음(1973). 수치는 설계 선택 |
 | 잉크 양 0.7~1.35배, 아래 3분의 1 줄무늬 강조 | 1973 관찰을 옮김. 수치는 설계 선택 |
-| 2×2 반복, 칸마다 다른 [배경, 얼굴] 색 | 1967 판화집의 '같은 판, 다른 색 조합'. 색은 아래 「색 조합」의 10쌍에서 사진마다 겹치지 않게 4쌍을 무작위로 뽑음. **무작위 선택은 설계 선택**(워홀·휘트니는 조합을 골랐다) |
+| 2×2 반복, 칸마다 다른 [배경, 얼굴, 잉크] 색 | 1967 판화집의 '같은 판, 다른 색 조합'. 색은 아래 「색 조합」의 13벌에서 사진마다 겹치지 않게 4벌을 무작위로 뽑음. **무작위 선택은 설계 선택**(워홀·휘트니는 조합을 골랐다) |
 | 사진 배경에는 검정을 찍지 않음 | 설계 선택(원본 홍보 사진의 단순한 배경을 흉내) |
 
 ## 색 조합
 
-`PALETTES`의 10쌍은 작품 이미지에서 직접 뽑은 색이다. 칸마다 배경은 모서리 세 곳, 얼굴은 뺨 한 곳에서 5×5픽셀의 중앙값을 쟀다. 얼굴이 배경과 충분히 다르고(RGB 거리 90 이상), 검은 잉크가 얼굴 위에서 읽히는(명도 대비 4.5 이상) 쌍만 남겼다.
+`PALETTES`의 13벌은 작품 도판에서 직접 뽑은 색이다. 앞의 세 벌(Shot Sage Blue 1964, Cherry Marilyn 1962, MoMA 61240 포트폴리오 대표 이미지)은 도판에서 배경·뺨·검정 잉크를 손으로 찍었다. 뒤의 열 벌은 MoMA 포트폴리오 페이지에 올라온 개별 장 10점(61239, 61241~61249)의 512px 도판에서 k-means(7군집)로 색을 묶고, 배경·얼굴·사진 스크린 잉크에 해당하는 군집의 평균을 썼다(`scripts/`에는 없음, 일회성 측정). 1967 판화는 얼굴과 배경이 비슷한 장(초록 위 초록, 회색 위 짙은 회색)도 그대로 두었다. 워홀이 그렇게 찍었기 때문이다.
 
-| 배경 | 얼굴 | 작품 | 칸 위치 |
-|---|---|---|---|
-| `#d4251a` | `#e398b2` | Flavor Marilyns, 1962 | 1행 2열 |
-| `#38c0a1` | `#d5aecc` | Flavor Marilyns, 1962 | 1행 3열 |
-| `#7170a2` | `#dfc6d4` | Flavor Marilyns, 1962 | 3행 3열 |
-| `#558bc7` | `#dea3b3` | Shot Marilyns, 1964 | 1행 1열 |
-| `#ff7c50` | `#f8bbc8` | Shot Marilyns, 1964 | 1행 2열 |
-| `#3ec1b8` | `#fd8a9a` | Shot Marilyns, 1964 | 2행 1열 |
-| `#028db0` | `#ae9ebe` | Marilyn Monroe 판화집, 1967 | 2행 3열 |
-| `#fd7779` | `#97a7a6` | Mao 판화집, 1972 | 1행 2열 |
-| `#fcc2b8` | `#fc630e` | Mao 판화집, 1972 | 1행 5열 |
-| `#ebd235` | `#fbc695` | Mao 판화집, 1972 | 2행 3열 |
+| 배경 | 얼굴 | 잉크 | 작품 | 도판 |
+|---|---|---|---|---|
+| `#a4cabf` | `#f5969d` | `#1a150f` | Shot Sage Blue Marilyn, 1964 | Christie's lot 6369449 (2022) |
+| `#d5281a` | `#e99bb5` | `#1b1720` | Cherry Marilyn, 1962 | artnet Magazine (D'Arcy, 2006) |
+| `#f7557b` | `#ecb1ab` | `#222021` | Marilyn Monroe 판화집, 1967 | MoMA 61240 |
+| `#f9157d` | `#e9a29c` | `#252323` | 〃 | MoMA 61239 |
+| `#338b96` | `#fb1182` | `#629a7b` | 〃 | MoMA 61241 |
+| `#499eab` | `#c7a8be` | `#9e9e9f` | 〃 | MoMA 61242 |
+| `#a54f6d` | `#906b37` | `#0c1c51` | 〃 | MoMA 61243 |
+| `#cea9bd` | `#98d0d5` | `#748f1c` | 〃 | MoMA 61244 |
+| `#fd0967` | `#fc2f03` | `#5873bc` | 〃 | MoMA 61245 |
+| `#afdaba` | `#c6a3ba` | `#626263` | 〃 | MoMA 61246 |
+| `#896c62` | `#8d8c8d` | `#4f758e` | 〃 | MoMA 61247 |
+| `#88ba5f` | `#5b9558` | `#a92a06` | 〃 | MoMA 61248 |
+| `#282929` | `#777777` | `#151412` | 〃 | MoMA 61249 |
 
-이미지: 위키백과 각 문서의 대표 이미지(File:Andy Warhol Flavor Marilyns 1962.jpg, File:Andy Warhol Shot Marilyns 1964.jpg, File:Marilyn Monroe 1967.jpg, File:Warhol-mao-1972.jpg). 행·열은 그 이미지에서의 배치다.
+MoMA 번호는 `https://www.moma.org/collection/works/<번호>`. MoMA 기록은 이 판화집이 "스크린 5개(사진 1 + 색면 4), 일부 색은 살짝 어긋나게 찍음"이라고 적는다. 필터는 머리·입술·눈두덩을 분리하지 않고 얼굴 한 색으로 합쳤다(단순화).
 
-**주의**: 저해상도 복제 사진이라 촬영 조명과 JPEG 압축 때문에 실물과 다를 수 있다. 발표에서는 "작품 사진에서 뽑은 색"으로 말한다. Flavor Marilyns 이미지에 담긴 9점에는 레몬 배경이 없지만, 위키백과는 연작에 레몬이 있다고 적는다(이미지에 없는 작품일 수 있음).
+**주의**: 저해상도 복제 사진이라 촬영 조명과 JPEG 압축 때문에 실물과 다를 수 있다. 발표에서는 "작품 도판에서 뽑은 색"으로 말한다. Shot Sage Blue와 Cherry Marilyn은 미술관 소장이 아니라 경매사·미술 매체 도판이다.
 
 ## 출처
 
@@ -59,5 +62,6 @@
 - [Tate, TAAMPP newsletter 3 (2008)](https://www.tate.org.uk/documents/99/taampp_newsletter_3_january2008.pdf)
 - [Warhol Museum, Underpainting and Photographic Silkscreen Printing](https://www.warhol.org/wp-content/uploads/2018/04/Silkscreen-4-Underpainting-and-Photographic-Silkscreen-Printing.docx)
 - [Warhol Museum, Commissioned Portraits](https://warhol.org/lessons/commissioned-portraits)
-- [MoMA, Gold Marilyn Monroe](https://www.moma.org/collection/works/79737) · [MoMA, Marilyn Monroe portfolio](https://www.moma.org/collection/works/61240) (403, 검색 요약으로 확인)
+- [MoMA, Gold Marilyn Monroe](https://www.moma.org/collection/works/79737) · [MoMA, Marilyn Monroe portfolio](https://www.moma.org/collection/works/61240) · [MoMA, 포트폴리오 10장 도판](https://www.moma.org/collection/works/portfolios/61240)
+- [Christie's, Shot Sage Blue Marilyn (lot 6369449)](https://www.christies.com/lot/lot-6369449) · [artnet Magazine, Cherry Marilyn 도판](https://www.artnet.com/magazineus/features/darcy/darcy7-24-06_detail.asp?picnum=7)
 - [Wikipedia, Marilyn Diptych](https://en.wikipedia.org/wiki/Marilyn_Diptych) · [Marilyn Monroe portfolio](https://en.wikipedia.org/wiki/Marilyn_Monroe_portfolio) · [Flavor Marilyns](https://en.wikipedia.org/wiki/Flavor_Marilyns)

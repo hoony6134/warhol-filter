@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { subjectMask, coverage, dotScreen, renderTile, warholize, mulberry32, PALETTES, INK } from '../public/filter.js';
+import { subjectMask, coverage, dotScreen, renderTile, warholize, mulberry32, PALETTES } from '../public/filter.js';
 
 const S = 40, n = S * S;
 const hex = (c) => [1, 3, 5].map((k) => parseInt(c.slice(k, k + 2), 16));
@@ -24,12 +24,13 @@ assert.equal(cov[S * 1 + S - 2], 0, 'no ink outside subject');
 
 // Layer order: black on top of color; flat ground outside; flat subject color where no ink.
 const tile = renderTile(subj, cov, dotScreen(S, S), S, PALETTES[0], still);
-assert.deepEqual(px(tile, 2, 1), hex(INK), 'shadow prints black over the subject color');
+assert.deepEqual(px(tile, 2, 1), hex(PALETTES[0][2]), 'shadow prints the ink over the subject color');
 assert.deepEqual(px(tile, 2, S - 1), hex(PALETTES[0][1]), 'highlight shows flat subject color');
 assert.deepEqual(px(tile, S - 2, 20), hex(PALETTES[0][0]), 'outside subject shows flat ground');
 
 // Ink load: heavy pull covers more than a thin one.
-const inked = (t) => { let c = 0; for (let i = 0; i < n; i++) if (t[i * 4] === hex(INK)[0] && t[i * 4 + 1] === hex(INK)[1]) c++; return c; };
+const ink0 = hex(PALETTES[0][2]);
+const inked = (t) => { let c = 0; for (let i = 0; i < n; i++) if (t[i * 4] === ink0[0] && t[i * 4 + 1] === ink0[1]) c++; return c; };
 const screen = dotScreen(S, S);
 assert.ok(inked(renderTile(subj, cov, screen, S, PALETTES[0], { ...still, load: 1.35 })) >
           inked(renderTile(subj, cov, screen, S, PALETTES[0], { ...still, load: 0.7 })), 'heavy ink > thin ink');
@@ -54,10 +55,11 @@ for (let seed = 1; seed <= 50; seed++) {
   assert.equal(new Set(seen).size, 4, 'four different pairs');
 }
 
-// Color reroll: same print seed + new color seed → same black layer, different colors.
-const isInk = (t) => Array.from({ length: n }, (_, i) => t[i * 4] === hex(INK)[0] && t[i * 4 + 1] === hex(INK)[1] && t[i * 4 + 2] === hex(INK)[2]);
+// Color reroll: same print seed + new color seed → same ink layer, different colors.
+// Ink differs per palette, so ink pixels are those that are neither the ground (right edge) nor the flat subject color (bottom-left highlight).
+const isInk = (t) => { const g = px(t, S - 1, 20).join(), f = px(t, 2, S - 1).join(); return Array.from({ length: n }, (_, i) => { const c = px(t, i % S, (i / S) | 0).join(); return c !== g && c !== f; }); };
 const base = warholize(rgba, mask, S, 7, 1), rer = warholize(rgba, mask, S, 7, 2);
-assert.deepEqual(rer.map(isInk), base.map(isInk), 'reroll keeps the black layer');
+assert.deepEqual(rer.map(isInk), base.map(isInk), 'reroll keeps the ink layer');
 assert.notDeepEqual(rer.map((t) => px(t, S - 1, 20).join()), base.map((t) => px(t, S - 1, 20).join()), 'reroll changes colors');
 
 console.log('filter ok');

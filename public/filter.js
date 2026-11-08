@@ -1,24 +1,27 @@
 // Warhol's photo-silkscreen process as code (see RESEARCH.md for sources).
 //  1. Flat color first: one ground color + one subject color, loosely traced, not following tones.
-//  2. Black photo screen last: solid in shadows, coarse halftone dots in midtones, nothing in highlights.
+//  2. Photo screen last, in black or a dark/contrasting ink: solid in shadows, a narrow band of halftone dots in midtones, nothing in highlights.
 //  3. The same screen reused per repeat, so it lands off-register (offset + slight rotation).
 //  4. Uneven ink: heavy pulls fill the dots in, thin pulls leave a ghost, and the squeegee leaves streaks.
 // Pure functions (no DOM) so test/filter.test.js can run them in Node.
 // shortcut: tone thresholds, dot pitch and offset ranges are design choices; no source gives measured values.
 
-export const INK = '#161616';
-// [ground, face] pairs sampled from the works themselves (RESEARCH.md, "색 조합"). Each photo draws 4 different pairs.
+// [ground, face, photo-screen ink] sampled from the works themselves (RESEARCH.md, "색 조합"). Each photo draws 4 different triples.
+// The 1967 portfolio printed the photo screen in a different ink per sheet, not always black.
 export const PALETTES = [
-  ['#d4251a', '#e398b2'], // Flavor Marilyns 1962, red
-  ['#38c0a1', '#d5aecc'], // Flavor Marilyns 1962, mint
-  ['#7170a2', '#dfc6d4'], // Flavor Marilyns 1962, grey-violet
-  ['#558bc7', '#dea3b3'], // Shot Marilyns 1964, blue
-  ['#ff7c50', '#f8bbc8'], // Shot Marilyns 1964, orange
-  ['#3ec1b8', '#fd8a9a'], // Shot Marilyns 1964, turquoise
-  ['#028db0', '#ae9ebe'], // Marilyn Monroe portfolio 1967, blue
-  ['#fd7779', '#97a7a6'], // Mao portfolio 1972, coral
-  ['#fcc2b8', '#fc630e'], // Mao portfolio 1972, pale pink
-  ['#ebd235', '#fbc695'], // Mao portfolio 1972, yellow
+  ['#a4cabf', '#f5969d', '#1a150f'], // Shot Sage Blue Marilyn 1964 (Christie's)
+  ['#d5281a', '#e99bb5', '#1b1720'], // Cherry Marilyn 1962 (artnet)
+  ['#f7557b', '#ecb1ab', '#222021'], // Marilyn Monroe 1967, MoMA 61240
+  ['#f9157d', '#e9a29c', '#252323'], // 1967, MoMA 61239
+  ['#338b96', '#fb1182', '#629a7b'], // 1967, MoMA 61241
+  ['#499eab', '#c7a8be', '#9e9e9f'], // 1967, MoMA 61242
+  ['#a54f6d', '#906b37', '#0c1c51'], // 1967, MoMA 61243
+  ['#cea9bd', '#98d0d5', '#748f1c'], // 1967, MoMA 61244
+  ['#fd0967', '#fc2f03', '#5873bc'], // 1967, MoMA 61245
+  ['#afdaba', '#c6a3ba', '#626263'], // 1967, MoMA 61246
+  ['#896c62', '#8d8c8d', '#4f758e'], // 1967, MoMA 61247
+  ['#88ba5f', '#5b9558', '#a92a06'], // 1967, MoMA 61248
+  ['#282929', '#777777', '#151412'], // 1967, MoMA 61249
 ];
 const DOT_PITCH = 5; // px per halftone cell at a 300px tile; large enough to read as dots on a phone
 
@@ -66,14 +69,15 @@ export function subjectMask(mask, w, h) {
   return out;
 }
 
-// Ink coverage 0..1 from the photo: 1 in shadows, 0 in highlights, a ramp in between (midtones → dots).
+// Ink coverage 0..1 from the photo: 1 in shadows, 0 in highlights, a short ramp in between (midtones → dots).
+// The ramp is narrow (30th→45th percentile) because the 1967 prints are nearly solid, with little halftone.
 // Thresholds are the subject's own percentiles so dark and bright photos both print.
 export function coverage(lum, subj, n) {
   const hist = new Uint32Array(256);
   let total = 0;
   for (let i = 0; i < n; i++) if (subj[i]) { hist[Math.min(255, lum[i] | 0)]++; total++; }
   const pct = (p) => { let acc = 0; for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc >= total * p) return v; } return 255; };
-  const dark = pct(0.3), light = Math.max(dark + 1, pct(0.6));
+  const dark = pct(0.3), light = Math.max(dark + 1, pct(0.45));
   const cov = new Float32Array(n);
   for (let i = 0; i < n; i++) cov[i] = !subj[i] ? 0 : Math.min(1, Math.max(0, (light - lum[i]) / (light - dark)));
   return cov;
@@ -103,9 +107,9 @@ export function pull(rnd, S) {
 
 const hex = (c) => [1, 3, 5].map((k) => parseInt(c.slice(k, k + 2), 16));
 
-// One repeat: color layer, then the black screen on top.
+// One repeat: color layer, then the photo screen on top in the palette's ink.
 export function renderTile(subj, cov, screen, S, palette, p) {
-  const [ground, skin] = palette.map(hex), ink = hex(INK);
+  const [ground, skin, ink] = palette.map(hex);
   const out = new Uint8ClampedArray(S * S * 4);
   const c = S / 2, cos = Math.cos(p.rot), sin = Math.sin(p.rot);
   for (let y = 0; y < S; y++) {
@@ -116,7 +120,7 @@ export function renderTile(subj, cov, screen, S, palette, p) {
       const cx = x - p.color[0], cy = y - p.color[1];
       const inSubj = cx >= 0 && cy >= 0 && cx < S && cy < S && subj[cy * S + cx];
       let col = inSubj ? skin : ground;
-      // Black screen: rotate about the center, then offset.
+      // Photo screen: rotate about the center, then offset.
       const sx = Math.round(cos * (x - c) + sin * (y - c) + c - p.ink[0]);
       const sy = Math.round(-sin * (x - c) + cos * (y - c) + c - p.ink[1]);
       if (sx >= 0 && sy >= 0 && sx < S && sy < S) {
