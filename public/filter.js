@@ -1,12 +1,11 @@
-// Warhol's photo-silkscreen process as code (see RESEARCH.md for sources).
+// Warhol's photo-silkscreen process as code.
 //  1. Flat color first: one ground color + one subject color, loosely traced, not following tones.
 //  2. Photo screen last, in black or a dark/contrasting ink: solid in shadows, a narrow band of halftone dots in midtones, nothing in highlights.
 //  3. The same screen reused per repeat, so it lands off-register (offset + slight rotation).
 //  4. Uneven ink: heavy pulls fill the dots in, thin pulls leave a ghost, and the squeegee leaves streaks.
 // Pure functions (no DOM) so test/filter.test.js can run them in Node.
-// shortcut: tone thresholds, dot pitch and offset ranges are design choices; no source gives measured values.
 
-// [ground, face, photo-screen ink] sampled from the works themselves (RESEARCH.md, "색 조합"). Each photo draws 4 different triples.
+// [ground, face, photo-screen ink] sampled from the works themselves. Each photo draws 4 different triples.
 // The 1967 portfolio printed the photo screen in a different ink per sheet, not always black.
 export const PALETTES = [
   ['#a4cabf', '#f5969d', '#1a150f'], // Shot Sage Blue Marilyn 1964 (Christie's)
