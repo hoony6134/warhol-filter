@@ -2,3 +2,7 @@ node_modules/
 .wrangler/
 .dev.vars
 .admin-key
+.claude/
+PLAN.md
+RESEARCH.md
+.DS_Store
